@@ -107,3 +107,6 @@ nenv/
 play_code/
 .pytest_cache/
 patch/
+
+# all log file
+/*.log
