@@ -5,8 +5,7 @@ import mpi4py.MPI as MPI
 
 import llm_stethoscope.shares as shares
 from llm_stethoscope.ls_config import load_config, args
-from llm_stethoscope import static_info
-from llm_stethoscope.MPIFileHandler import MPIFileHandler
+from llm_stethoscope import static_info, MPIFileHandler
 
 # ============================================================
 # declare parameter
@@ -36,15 +35,17 @@ config_info_entity = load_config(args)
 if comm_rank == 0:
     # show logo
     shares.show_logo()
-
     # make sure packages
     shares.make_sure_packages(config_info_entity)
+
 
 # ============================================================
 # main process
 # NOTICE: DO NOT MOVE FOLLOWING 'IMPORT' CODE TO THE TOP
 # ============================================================
 import time
+
+from llm_stethoscope import load_data, share_with_all_process
 
 
 def init_env():
@@ -57,7 +58,24 @@ def init_env():
     # start time
     start_ts = time.perf_counter()
 
-    pass
+    # load data
+    all_test_data_as_numpy_array = None
+    if comm_rank == 0:
+        # load data from json file
+        all_test_data_as_numpy_array = load_data(config_info_entity.test_common_input_data_file,
+                                                 config_info_entity.test_common_file_object_hook,
+                                                 config_info_entity.log_level,
+                                                 logger,
+                                                 comm_size)
+    # if comm_rank == 0 and is_performance_test:
+    #     # start remote probe
+    #     start_remote_probe(str(probe_host), int(ssh_port), str(ssh_username), str(ssh_pwd))
+
+    # split & share data with other process
+    recv_data = share_with_all_process(all_test_data_as_numpy_array,
+                                       comm,
+                                       config_info_entity.log_level,
+                                       logger)
 
     # stop time
     end_ts = time.perf_counter()
@@ -67,5 +85,4 @@ def init_env():
 
 if __name__ == '__main__':
 
-    if comm_rank == 0:
-        init_env()
+    init_env()

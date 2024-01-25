@@ -19,6 +19,10 @@ class ConfigInfo:
         # [SECTION] test common
         # run accuracy test
         self._test_common_test_accuracy: bool = False
+        # input data file
+        self._test_common_input_data_file: str = ''
+        # data file parsing function name
+        self._test_common_file_object_hook: str = ''
 
     @staticmethod
     def section_map() -> dict:
@@ -35,6 +39,8 @@ class ConfigInfo:
             ],
             'test_common': [
                 'test_accuracy',
+                'input_data_file',
+                'file_object_hook',
             ],
         }
 
@@ -69,3 +75,19 @@ class ConfigInfo:
     @test_common_test_accuracy.setter
     def test_common_test_accuracy(self, test_accuracy):
         self._test_common_test_accuracy = eval(test_accuracy)
+
+    @property
+    def test_common_input_data_file(self) -> Union[None, str]:
+        return self._test_common_input_data_file
+
+    @test_common_input_data_file.setter
+    def test_common_input_data_file(self, input_data_file):
+        self._test_common_input_data_file = input_data_file
+
+    @property
+    def test_common_file_object_hook(self) -> Union[None, str]:
+        return self._test_common_file_object_hook
+
+    @test_common_file_object_hook.setter
+    def test_common_file_object_hook(self, file_object_hook):
+        self._test_common_file_object_hook = file_object_hook

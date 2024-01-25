@@ -7,6 +7,7 @@ REQUIRED_PACKAGES = [
     "nvitop==1.3.1",
     "openai==1.3.7",
     "mpi4py==3.1.5",
+    'numpy==1.24.3',
 ]
 
 

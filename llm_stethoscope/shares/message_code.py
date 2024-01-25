@@ -17,6 +17,7 @@ class StandardMessageCode(Enum):
     I_100_9000_200001 = (1009000200001, 'Reading {file_name}')
     # I_100_9000_200002 = (1009000200002, 'Call {method_name}() start')
     # I_100_9000_200003 = (1009000200003, 'Call {method_name}() end')
+    I_100_9000_200004 = (1009000200004, '[Confirm -> 🦋] {debug_me}')
 
     def get_code(self):
         return self.value[0]
