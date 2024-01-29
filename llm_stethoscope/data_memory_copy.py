@@ -79,7 +79,7 @@ def share_with_all_process(all_test_data,
     :param comm: mpi4py.MPI object
     :param log_level: log level
     :param logger: logger
-    :return:
+    :return: numpy array, shape = [row, group_size]
     """
 
     comm_rank = comm.Get_rank()
@@ -90,6 +90,11 @@ def share_with_all_process(all_test_data,
         (_r, _c) = all_test_data.shape
         _dtype = all_test_data.dtype
         group_num = comm_size - 1
+
+        # verify
+        if group_num <= 0:
+            raise RuntimeError(StandardMessageCode.E_100_9000_000002.get_msg())
+
         group_size = int(_c / group_num + 0.5)
     else:
         _r = None
