@@ -17,12 +17,25 @@ class ConfigInfo:
         self._log_level: int = 0
 
         # [SECTION] test common
-        # run accuracy test
-        self._test_common_test_accuracy: bool = False
+        # use annotated data as ground truth
+        self._test_common_is_use_annotated_data_as_gt: bool = False
         # input data file
         self._test_common_input_data_file: str = ''
         # data file parsing function name
         self._test_common_file_object_hook: str = ''
+        # the number of test groups
+        self._test_common_group_number: int = 0
+
+        # [SECTION] "Ground Truth" section
+        # LLM server's type. Only "openai" and "triton" are supported currently
+        self._test_group_ground_truth_llm_server_type: str = ''
+        # server url
+        self._test_group_ground_truth_url: str = ''
+
+        # [SECTION] test group
+        # - key: test_group_{0}_llm_server_type -> str
+        # - key: test_group_{0}_url -> str
+        self._test_group_dict: dict = {}
 
     @staticmethod
     def section_map() -> dict:
@@ -38,9 +51,14 @@ class ConfigInfo:
                 'level',
             ],
             'test_common': [
-                'test_accuracy',
+                'is_use_annotated_data_as_gt',
                 'input_data_file',
                 'file_object_hook',
+                'group_number',
+            ],
+            'test_group_ground_truth': [
+                'llm_server_type',
+                'url',
             ],
         }
 
@@ -69,12 +87,12 @@ class ConfigInfo:
         self._log_level = int(log_level)
 
     @property
-    def test_common_test_accuracy(self) -> Union[None, bool]:
-        return self._test_common_test_accuracy
+    def test_common_is_use_annotated_data_as_gt(self) -> Union[None, bool]:
+        return self._test_common_is_use_annotated_data_as_gt
 
-    @test_common_test_accuracy.setter
-    def test_common_test_accuracy(self, test_accuracy):
-        self._test_common_test_accuracy = eval(test_accuracy)
+    @test_common_is_use_annotated_data_as_gt.setter
+    def test_common_is_use_annotated_data_as_gt(self, test_common_is_use_annotated_data_as_gt):
+        self._test_common_is_use_annotated_data_as_gt = eval(test_common_is_use_annotated_data_as_gt)
 
     @property
     def test_common_input_data_file(self) -> Union[None, str]:
@@ -91,3 +109,31 @@ class ConfigInfo:
     @test_common_file_object_hook.setter
     def test_common_file_object_hook(self, file_object_hook):
         self._test_common_file_object_hook = file_object_hook
+
+    @property
+    def test_common_group_number(self) -> Union[None, int]:
+        return self._test_common_group_number
+
+    @test_common_group_number.setter
+    def test_common_group_number(self, group_number):
+        self._test_common_group_number = eval(group_number)
+
+    @property
+    def test_group_ground_truth_llm_server_type(self) -> Union[None, str]:
+        return self._test_group_ground_truth_llm_server_type
+
+    @test_group_ground_truth_llm_server_type.setter
+    def test_group_ground_truth_llm_server_type(self, llm_server_type):
+        self._test_group_ground_truth_llm_server_type = llm_server_type
+
+    @property
+    def test_group_ground_truth_url(self) -> Union[None, str]:
+        return self._test_group_ground_truth_url
+
+    @test_group_ground_truth_url.setter
+    def test_group_ground_truth_url(self, url):
+        self._test_group_ground_truth_url = url
+
+    @property
+    def test_group_dict(self) -> Union[None, dict]:
+        return self._test_group_dict

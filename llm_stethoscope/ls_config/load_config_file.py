@@ -43,6 +43,19 @@ def load_config_file(args) -> ConfigInfo:
                 # some values may do not exist
                 exec(f'rtn.{k}_{_item} = None')
 
+    # fetch & setup group values
+    for i in range(rtn.test_common_group_number - 1):
+        try:
+            # test_group_{i}_llm_server_type
+            exec(f'rtn.test_group_dict["test_group_{i}_llm_server_type"] = '
+                 f'config_file_reader["test_group_{i}"]["llm_server_type"]')
+            # test_group_{0}_url
+            exec(f'rtn.test_group_dict["test_group_{i}_url"] = '
+                 f'config_file_reader["test_group_{i}"]["url"]')
+        except KeyError as e:
+            # some values may do not exist
+            raise AttributeError(StandardMessageCode.E_100_9000_000003.get_formatted_msg(config_name=f'test_group_{i}'))
+
     del config_file_reader
 
     return rtn

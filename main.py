@@ -38,6 +38,11 @@ if comm_rank == 0:
     # make sure packages
     shares.make_sure_packages(config_info_entity)
 
+    # verify world size
+    if 1 == comm_size:
+        from llm_stethoscope.shares.message_code import StandardMessageCode
+        logger.warning(StandardMessageCode.W_100_9000_100001.get_msg())
+
 
 # ============================================================
 # main process
@@ -67,22 +72,33 @@ def init_env():
                                                  config_info_entity.log_level,
                                                  logger,
                                                  comm_size)
+
+    # TODO
     # if comm_rank == 0 and is_performance_test:
     #     # start remote probe
     #     start_remote_probe(str(probe_host), int(ssh_port), str(ssh_username), str(ssh_pwd))
 
     # split & share data with other process
-    recv_data = share_with_all_process(all_test_data_as_numpy_array,
-                                       comm,
-                                       config_info_entity.log_level,
-                                       logger)
+    _recv_data = share_with_all_process(all_test_data_as_numpy_array,
+                                        comm,
+                                        config_info_entity.log_level,
+                                        logger)
 
     # stop time
     end_ts = time.perf_counter()
 
-    logger.info(f'Total process time: {end_ts - start_ts} s')
+    if config_info_entity.log_level >= 1:
+        logger.info(f'Total process time: {end_ts - start_ts} s')
+
+    return _recv_data
 
 
 if __name__ == '__main__':
 
-    init_env()
+    # init
+    # - load data
+    # - split dataset to all process
+    # - TODO start remote probe
+    recv_data = init_env()
+
+    

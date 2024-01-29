@@ -4,7 +4,7 @@
 # main.sh <process amount>
 
 # find process amount
-process_amount=1
+process_amount=2
 
 if [ -n "$1" ]; then
     process_amount=$1
@@ -13,4 +13,5 @@ echo ">>> Process amount $process_amount"
 
 export PYTHONPATH=`pwd` && \
 mpiexec -n $process_amount \
-    python ./main.py
+    python ./main.py \
+        --configFile=./stethoscope_config_localtest.ini

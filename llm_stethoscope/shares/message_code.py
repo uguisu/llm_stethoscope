@@ -9,9 +9,13 @@ class StandardMessageCode(Enum):
     """
     # error
     E_100_9000_000001 = (1009000000001, 'Can not find config file {cfg_file_name}')
+    E_100_9000_000002 = (1009000000002, 'Do not have enough process to execute jobs. '
+                                        'Please consider increasing the number of processes.')
+    E_100_9000_000003 = (1009000000003, 'Configuration information error: {config_name}')
 
     # warning
-    # W_100_9000_100001 = (1009000100001, 'The thread pool is full')
+    W_100_9000_100001 = (1009000100001, 'Detect running under single process model. '
+                                        'Please consider increasing the number of processes.')
 
     # info
     I_100_9000_200001 = (1009000200001, 'Reading {file_name}')
