@@ -107,6 +107,7 @@ nenv/
 play_code/
 .pytest_cache/
 patch/
+stethoscope_config_localtest.ini
 
 # all log file
 /*.log
