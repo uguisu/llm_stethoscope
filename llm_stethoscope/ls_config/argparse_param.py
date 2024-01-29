@@ -1,6 +1,6 @@
 # coding=utf-8
 # author xin.he
-import argparse
+from absl.flags import argparse_flags as argparse
 
 
 def declare_argparse():
