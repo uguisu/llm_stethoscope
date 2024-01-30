@@ -11,6 +11,8 @@ if [ -n "$1" ]; then
 fi
 echo ">>> Process amount $process_amount"
 
+rm ./stethoscope.log
+
 export PYTHONPATH=`pwd` && \
 mpiexec -n $process_amount \
     python ./main.py \
