@@ -3,7 +3,7 @@
     "conversations": [
       {
         "from": "human",
-        "value": "Say something to model 001"
+        "value": "How many hours are there in a day"
       },
       {
         "from": "gpt",
@@ -15,7 +15,7 @@
     "conversations": [
       {
         "from": "human",
-        "value": "Say something to model 002"
+        "value": "1日は何時間ありますか"
       },
       {
         "from": "gpt",
@@ -27,7 +27,7 @@
     "conversations": [
       {
         "from": "human",
-        "value": "Say something to model 003"
+        "value": "我觉得冷，我应该脱下湿衣服吗"
       },
       {
         "from": "gpt",

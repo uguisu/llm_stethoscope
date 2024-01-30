@@ -75,10 +75,14 @@ def init_env():
 
         if not config_info_entity.test_common_is_use_annotated_data_as_gt:
             # ignore annotated data, overwrite "ground truth" via special test group
-            overwrite_ground_truth(config_info_entity.test_group_dict['0'],
-                                   all_test_data_as_numpy_array,
-                                   config_info_entity.log_level,
-                                   logger)
+            wrk_new_data = overwrite_ground_truth(config_info_entity.test_group_dict['0'],
+                                                  all_test_data_as_numpy_array,
+                                                  config_info_entity.log_level,
+                                                  logger)
+            # delete old data object
+            del all_test_data_as_numpy_array
+            # replace
+            all_test_data_as_numpy_array = wrk_new_data
 
     # TODO
     # if comm_rank == 0 and is_performance_test:

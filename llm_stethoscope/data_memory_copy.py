@@ -163,6 +163,10 @@ def share_with_all_process(all_test_data,
             logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
                 debug_me=f'[Receiver]: {recv_data.shape}'
             ))
+            logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
+                debug_me=f'[confirm ground truth overwrite] recv_data[1][0] = {recv_data[1][0]}'
+            ))
+            print(f'[confirm ground truth overwrite] len recv_data[1][0] = {len(recv_data[1][0])}')
 
     return recv_data
 
@@ -170,13 +174,14 @@ def share_with_all_process(all_test_data,
 def overwrite_ground_truth(ground_truth_server_info: ApiServerConfigInfo,
                            np_test_data: np.ndarray,
                            log_level,
-                           logger):
+                           logger) -> np.ndarray:
     """
     overwrite ground truth data
     :param ground_truth_server_info: ApiServerConfigInfo instance
     :param np_test_data: data as numpy array
     :param log_level: log level
     :param logger: logger
+    :return: new test data with the same shape of input variable "np_test_data"
     """
 
     from .abstract_api_tester import AbstractApiTester, api_tester_factory
@@ -191,6 +196,16 @@ def overwrite_ground_truth(ground_truth_server_info: ApiServerConfigInfo,
         logger
     )
 
-    for _original_data in np_test_data[0]:
-        # TODO loop
-        logger.info('kakin hitachi')
+    # post
+    resp = ground_truth_api_poster.post_req()
+
+    if log_level == 3:
+        for _resp in resp:
+            logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
+                debug_me=_resp
+            ))
+
+    # confirm size
+    assert np_test_data.shape[1] == len(resp)
+
+    return np.vstack([np_test_data[0], resp])

@@ -86,6 +86,7 @@ def load_config_file(args, logger, comm_rank) -> ConfigInfo:
             raise AttributeError(msg)
 
         rtn.test_group_dict[str(idx)] = api_server
+        idx += 1
 
     del config_file_reader
 
