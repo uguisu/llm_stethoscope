@@ -3,7 +3,48 @@
 from typing import Union
 
 
+class ApiServerConfigInfo:
+    """
+    api server config info entity
+    """
+
+    def __init__(self):
+        # LLM server's type. Only "openai" and "triton" are supported currently
+        self._llm_server_type: str = ''
+        # server url
+        self._url: str = ''
+        # model name
+        self._model_name: str = ''
+
+    @property
+    def llm_server_type(self) -> Union[None, str]:
+        return self._llm_server_type
+
+    @llm_server_type.setter
+    def llm_server_type(self, llm_server_type):
+        self._llm_server_type = llm_server_type
+
+    @property
+    def url(self) -> Union[None, str]:
+        return self._url
+
+    @url.setter
+    def url(self, url):
+        self._url = url
+
+    @property
+    def model_name(self) -> Union[None, str]:
+        return self._model_name
+
+    @model_name.setter
+    def model_name(self, model_name):
+        self._model_name = model_name
+
+
 class ConfigInfo:
+    """
+    config info entity
+    """
 
     def __init__(self):
         # [SECTION] dynamic-pip
@@ -25,16 +66,12 @@ class ConfigInfo:
         self._test_common_file_object_hook: str = ''
         # the number of test groups
         self._test_common_group_number: int = 0
+        # test group section names
+        self._test_common_groups: tuple = ()
 
-        # [SECTION] "Ground Truth" section
-        # LLM server's type. Only "openai" and "triton" are supported currently
-        self._test_group_ground_truth_llm_server_type: str = ''
-        # server url
-        self._test_group_ground_truth_url: str = ''
-
-        # [SECTION] test group
-        # - key: test_group_{0}_llm_server_type -> str
-        # - key: test_group_{0}_url -> str
+        # [SECTION] test group details
+        # - key: index numer. Note!
+        # - val: ApiServerConfigInfo instance
         self._test_group_dict: dict = {}
 
     @staticmethod
@@ -54,11 +91,7 @@ class ConfigInfo:
                 'is_use_annotated_data_as_gt',
                 'input_data_file',
                 'file_object_hook',
-                'group_number',
-            ],
-            'test_group_ground_truth': [
-                'llm_server_type',
-                'url',
+                'groups',
             ],
         }
 
@@ -111,28 +144,12 @@ class ConfigInfo:
         self._test_common_file_object_hook = file_object_hook
 
     @property
-    def test_common_group_number(self) -> Union[None, int]:
-        return self._test_common_group_number
+    def test_common_groups(self) -> Union[None, tuple]:
+        return self._test_common_groups
 
-    @test_common_group_number.setter
-    def test_common_group_number(self, group_number):
-        self._test_common_group_number = eval(group_number)
-
-    @property
-    def test_group_ground_truth_llm_server_type(self) -> Union[None, str]:
-        return self._test_group_ground_truth_llm_server_type
-
-    @test_group_ground_truth_llm_server_type.setter
-    def test_group_ground_truth_llm_server_type(self, llm_server_type):
-        self._test_group_ground_truth_llm_server_type = llm_server_type
-
-    @property
-    def test_group_ground_truth_url(self) -> Union[None, str]:
-        return self._test_group_ground_truth_url
-
-    @test_group_ground_truth_url.setter
-    def test_group_ground_truth_url(self, url):
-        self._test_group_ground_truth_url = url
+    @test_common_groups.setter
+    def test_common_groups(self, groups):
+        self._test_common_groups = eval(groups)
 
     @property
     def test_group_dict(self) -> Union[None, dict]:

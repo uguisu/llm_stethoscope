@@ -3,19 +3,20 @@
 import configparser
 import os
 
-from ..ls_config import ConfigInfo
+from ..ls_config import ApiServerConfigInfo, ConfigInfo
 from ..shares.message_code import StandardMessageCode
 from ..static_info import CONFIG_FILE_NAME
 
 
-def load_config_file(args) -> ConfigInfo:
+def load_config_file(args, logger, comm_rank) -> ConfigInfo:
     """
     load config from file
 
     :param args: system argument variables
+    :param logger: logger
+    :param comm_rank: process rank
     :return: an instance of ConfigInfo object
     """
-
     if args.configFile is None:
         config_f = os.path.join(os.path.abspath(os.path.curdir), CONFIG_FILE_NAME)
     else:
@@ -44,23 +45,54 @@ def load_config_file(args) -> ConfigInfo:
                 exec(f'rtn.{k}_{_item} = None')
 
     # fetch & setup group values
-    for i in range(rtn.test_common_group_number - 1):
+    idx = 0
+    for _grp in rtn.test_common_groups:
+
+        api_server = ApiServerConfigInfo()
         try:
-            # test_group_{i}_llm_server_type
-            exec(f'rtn.test_group_dict["test_group_{i}_llm_server_type"] = '
-                 f'config_file_reader["test_group_{i}"]["llm_server_type"]')
-            # test_group_{0}_url
-            exec(f'rtn.test_group_dict["test_group_{i}_url"] = '
-                 f'config_file_reader["test_group_{i}"]["url"]')
+            api_server.llm_server_type = config_file_reader[_grp]['llm_server_type']
         except KeyError as e:
             # some values may do not exist
-            raise AttributeError(StandardMessageCode.E_100_9000_000003.get_formatted_msg(config_name=f'test_group_{i}'))
+            msg = StandardMessageCode.E_100_9000_000003.get_formatted_msg(config_name=f'{_grp}: llm_server_type')
+
+            if 0 == comm_rank:
+                # show error only once
+                logger.error(msg)
+
+            raise AttributeError(msg)
+
+        try:
+            api_server.url = config_file_reader[_grp]['url']
+        except KeyError as e:
+            # some values may do not exist
+            msg = StandardMessageCode.E_100_9000_000003.get_formatted_msg(config_name=f'{_grp}: url')
+
+            if 0 == comm_rank:
+                # show error only once
+                logger.error(msg)
+
+            raise AttributeError(msg)
+
+        try:
+            api_server.model_name = config_file_reader[_grp]['model_name']
+        except KeyError as e:
+            # some values may do not exist
+            msg = StandardMessageCode.E_100_9000_000003.get_formatted_msg(config_name=f'{_grp}: model_name')
+
+            if 0 == comm_rank:
+                # show error only once
+                logger.error(msg)
+
+            raise AttributeError(msg)
+
+        rtn.test_group_dict[str(idx)] = api_server
 
     del config_file_reader
 
     return rtn
 
 
+# TODO not sure what to override
 # def override_config_via_cli(args, conf_info: ConfigInfo) -> ConfigInfo:
 #     """
 #     override config info via command line parameter
@@ -79,15 +111,17 @@ def load_config_file(args) -> ConfigInfo:
 #     return conf_info
 
 
-def load_config(args) -> ConfigInfo:
+def load_config(args, logger, comm_rank) -> ConfigInfo:
     """
     load config
 
     :param args: system argument variables
+    :param logger: logger
+    :param comm_rank: process rank
     :return: an instance of ConfigInfo object
     """
 
-    rtn = load_config_file(args)
+    rtn = load_config_file(args, logger, comm_rank)
 
     # rtn = override_config_via_cli(args, rtn)
 

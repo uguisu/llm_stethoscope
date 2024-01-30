@@ -2,6 +2,7 @@
 # author xin.he
 
 from .config_info_entity import (
+    ApiServerConfigInfo,
     ConfigInfo,
 )
 

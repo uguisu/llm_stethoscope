@@ -29,7 +29,7 @@ _console_handler.setFormatter(_log_formatter)
 logger.addHandler(_console_handler)
 
 # read config
-config_info_entity = load_config(args)
+config_info_entity = load_config(args, logger, comm_rank)
 
 # pre-load
 if comm_rank == 0:
@@ -50,7 +50,7 @@ if comm_rank == 0:
 # ============================================================
 import time
 
-from llm_stethoscope import load_data, share_with_all_process
+from llm_stethoscope import load_data, share_with_all_process, overwrite_ground_truth
 
 
 def init_env():
@@ -72,6 +72,13 @@ def init_env():
                                                  config_info_entity.log_level,
                                                  logger,
                                                  comm_size)
+
+        if not config_info_entity.test_common_is_use_annotated_data_as_gt:
+            # ignore annotated data, overwrite "ground truth" via special test group
+            overwrite_ground_truth(config_info_entity.test_group_dict['0'],
+                                   all_test_data_as_numpy_array,
+                                   config_info_entity.log_level,
+                                   logger)
 
     # TODO
     # if comm_rank == 0 and is_performance_test:

@@ -8,6 +8,7 @@ import numpy as np
 
 # IMPORT 'file_object_hook' functions
 from .file_hook_mapping import *
+from .ls_config import ApiServerConfigInfo
 
 from .shares.message_code import StandardMessageCode
 
@@ -164,3 +165,32 @@ def share_with_all_process(all_test_data,
             ))
 
     return recv_data
+
+
+def overwrite_ground_truth(ground_truth_server_info: ApiServerConfigInfo,
+                           np_test_data: np.ndarray,
+                           log_level,
+                           logger):
+    """
+    overwrite ground truth data
+    :param ground_truth_server_info: ApiServerConfigInfo instance
+    :param np_test_data: data as numpy array
+    :param log_level: log level
+    :param logger: logger
+    """
+
+    from .abstract_api_tester import AbstractApiTester, api_tester_factory
+
+    # generate poster via factory
+    ground_truth_api_poster: AbstractApiTester = api_tester_factory(
+        ground_truth_server_info.llm_server_type,
+        np_test_data,
+        ground_truth_server_info.model_name,
+        ground_truth_server_info.url,
+        log_level,
+        logger
+    )
+
+    for _original_data in np_test_data[0]:
+        # TODO loop
+        logger.info('kakin hitachi')

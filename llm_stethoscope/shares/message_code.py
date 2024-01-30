@@ -12,6 +12,7 @@ class StandardMessageCode(Enum):
     E_100_9000_000002 = (1009000000002, 'Do not have enough process to execute jobs. '
                                         'Please consider increasing the number of processes.')
     E_100_9000_000003 = (1009000000003, 'Configuration information error: {config_name}')
+    E_100_9000_000004 = (1009000000004, 'Unknown server model: {model_name}')
 
     # warning
     W_100_9000_100001 = (1009000100001, 'Detect running under single process model. '

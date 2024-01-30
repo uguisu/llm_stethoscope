@@ -1,5 +1,7 @@
 # coding=utf-8
 # author xin.he
+from llm_stethoscope.shares.message_code import StandardMessageCode
+
 
 class AbstractApiTester:
     """
@@ -35,3 +37,23 @@ class AbstractApiTester:
 
         # this method should be overwritten before execute
         raise NotImplementedError()
+
+
+def api_tester_factory(llm_server_type: str,
+                       test_data,
+                       model,
+                       server_url,
+                       log_level,
+                       logger
+                       ):
+
+    if 'openai' == llm_server_type:
+        from llm_stethoscope.ls_openai import OpenAiApiTester
+        return OpenAiApiTester(test_data, model, server_url, log_level, logger)
+
+    if 'triton' == llm_server_type:
+        from llm_stethoscope.ls_triton import TritonApiTester
+        return TritonApiTester(test_data, model, server_url, log_level, logger)
+
+    # unknown server model
+    raise ValueError(StandardMessageCode.E_100_9000_000004.get_formatted_msg(model_name=llm_server_type))
