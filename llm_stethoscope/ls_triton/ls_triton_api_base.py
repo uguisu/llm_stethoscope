@@ -2,7 +2,6 @@
 # author xin.he
 import copy
 
-import numpy as np
 import requests
 
 from llm_stethoscope import AbstractApiTester
@@ -88,16 +87,24 @@ class TritonApiTester(AbstractApiTester):
         for i in range(self._test_data.shape[1]):
 
             # prepare post data
-            wrk_post_data = copy.deepcopy(HTTP_REQUEST_BODY_TEMPLATE)['text_input'] = self._test_data[0][i]
+            wrk_post_data = copy.deepcopy(HTTP_REQUEST_BODY_TEMPLATE)
+            wrk_post_data['text_input'] = self._test_data[0][i]
 
-            wrk_req = requests.post(f'{self._server_url}', data=wrk_post_data)
-            rst = eval(wrk_req.text)
+            wrk_req = requests.post(f'{self._server_url}', json=wrk_post_data)
+
+            # patch response data
+            _wrk_txt = wrk_req.text
+            _wrk_txt = _wrk_txt.replace('false', 'False')
+
+            rst = eval(_wrk_txt)
 
             # make sure return value can be converted
-            assert isinstance(rst, dict) and rst.get('text_output') is not None
+            assert isinstance(rst, dict)
 
             # fetch response value
             rst = rst.get('text_output')
+            assert rst is not None
+
             self._api_response_list.append(rst)
 
         return self._api_response_list

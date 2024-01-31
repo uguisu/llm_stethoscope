@@ -70,7 +70,7 @@ class ConfigInfo:
         self._test_common_groups: tuple = ()
 
         # [SECTION] test group details
-        # - key: index numer. Note!
+        # - key: group name
         # - val: ApiServerConfigInfo instance
         self._test_group_dict: dict = {}
 
