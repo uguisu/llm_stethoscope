@@ -175,8 +175,8 @@ if __name__ == '__main__':
 
             max_row_width = 120
 
-            logger.info((f'=== Report {grp_name} ' + '=' * max_row_width)[:max_row_width])
-            logger.info(f'Accuracy : {accu}')
+            logger.info((f'=== Report [{grp_name}] ' + '=' * max_row_width)[:max_row_width])
+            logger.info(f'🎯 Accuracy : {accu}')
             # logger.info(f'Total process time: {end_ts - start_ts} s')
             # logger.info(f'Average infer speed(sentence): { len(flatten_array) / (end_ts - start_ts) }')
             # logger.info(f'Average Response Time(ART): { (end_ts - start_ts) / len(flatten_array) }')
