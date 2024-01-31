@@ -1,0 +1,38 @@
+[
+  {
+    "conversations": [
+      {
+        "from": "human",
+        "value": "How many hours are there in a day"
+      },
+      {
+        "from": "gpt",
+        "value": "Model response 001"
+      }
+    ]
+  },
+  {
+    "conversations": [
+      {
+        "from": "human",
+        "value": "1日は何時間ありますか"
+      },
+      {
+        "from": "gpt",
+        "value": "Model response 002"
+      }
+    ]
+  },
+  {
+    "conversations": [
+      {
+        "from": "human",
+        "value": "我觉得冷，我应该脱下湿衣服吗"
+      },
+      {
+        "from": "gpt",
+        "value": "Model response 003"
+      }
+    ]
+  }
+]
