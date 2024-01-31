@@ -57,7 +57,7 @@ class AbstractApiTester:
         # infer result
         infer_array[1] = self._api_response_list
 
-        if self._log_level == 3:
+        if self._log_level >= 2:
             self._logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
                 debug_me=f'\n'
                          f'🟨 [Confirm 0002]: infer_array[0][0] =\n🔸🔸🔸{infer_array[0][0]}'
