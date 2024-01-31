@@ -145,7 +145,8 @@ if __name__ == '__main__':
                                                                config_info_entity.log_level,
                                                                logger)
             # post then get original infer result
-            process_infer_result = grp_tester.post_req()
+            _ = grp_tester.post_req()
+            process_infer_result = grp_tester.calculate_accuracy()
 
         # 'gather' function will return a 2D array, that each process will return a single array,
         # 'all_result' just tie them all
@@ -162,8 +163,26 @@ if __name__ == '__main__':
             # GC
             del all_result
 
+            # debug
             if 3 == config_info_entity.log_level:
                 for _debug in flatten_array[0:3]:
                     logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
                         debug_me=f'flatten_array[0:3] = {_debug}'
                     ))
+
+            # accuracy
+            accu = sum(flatten_array) / len(flatten_array)
+
+            max_row_width = 120
+
+            logger.info((f'=== Report {grp_name} ' + '=' * max_row_width)[:max_row_width])
+            logger.info(f'Accuracy : {accu}')
+            # logger.info(f'Total process time: {end_ts - start_ts} s')
+            # logger.info(f'Average infer speed(sentence): { len(flatten_array) / (end_ts - start_ts) }')
+            # logger.info(f'Average Response Time(ART): { (end_ts - start_ts) / len(flatten_array) }')
+            # logger.info('-' * 120)
+            # # logger.info(probe_result)
+            # logger.info(f'GPU utilization: Max - {probe_result.get("gpu_utilization").get("max")}, '
+            #             f'Min - {probe_result.get("gpu_utilization").get("min")}, '
+            #             f'Avg - {probe_result.get("gpu_utilization").get("avg")}')
+            logger.info('=' * max_row_width)
