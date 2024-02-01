@@ -111,3 +111,4 @@ stethoscope_config_localtest.ini
 
 # all log file
 /*.log
+data_private/
