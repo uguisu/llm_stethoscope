@@ -23,7 +23,8 @@ HTTP_REQUEST_BODY_TEMPLATE = {
     "bad_words": "",
     "stop_words": "",
     "pad_id": 2,
-    "end_id": 2
+    "end_id": 2,
+    "temperature": 0
 }
 
 # http response body template
