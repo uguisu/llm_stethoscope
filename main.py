@@ -146,7 +146,7 @@ if __name__ == '__main__':
                                                                logger)
             # post then get original infer result
             _ = grp_tester.post_req()
-            process_infer_result = grp_tester.calculate_accuracy()
+            process_infer_result = grp_tester.calculate_accuracy(is_use_patch=True)
 
         # 'gather' function will return a 2D array, that each process will return a single array,
         # 'all_result' just tie them all
