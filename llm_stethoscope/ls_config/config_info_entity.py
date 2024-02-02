@@ -149,7 +149,13 @@ class ConfigInfo:
 
     @test_common_groups.setter
     def test_common_groups(self, groups):
-        self._test_common_groups = eval(groups)
+
+        _wrk_in = eval(groups)
+        if isinstance(_wrk_in, str):
+            # python auto convert input to string, need change
+            _wrk_in = tuple([_wrk_in])
+
+        self._test_common_groups = _wrk_in
 
     @property
     def test_group_dict(self) -> Union[None, dict]:
