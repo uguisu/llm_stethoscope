@@ -45,7 +45,6 @@ def load_config_file(args, logger, comm_rank) -> ConfigInfo:
                 exec(f'rtn.{k}_{_item} = None')
 
     # fetch & setup group values
-    idx = 0
     for _grp in rtn.test_common_groups:
 
         api_server = ApiServerConfigInfo()
@@ -85,8 +84,7 @@ def load_config_file(args, logger, comm_rank) -> ConfigInfo:
 
             raise AttributeError(msg)
 
-        rtn.test_group_dict[str(idx)] = api_server
-        idx += 1
+        rtn.test_group_dict[_grp] = api_server
 
     del config_file_reader
 

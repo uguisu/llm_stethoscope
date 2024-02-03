@@ -41,9 +41,11 @@ class AbstractApiTester:
         # this method should be overwritten before execute
         raise NotImplementedError()
 
-    def calculate_accuracy(self) -> list:
+    def calculate_accuracy(self, is_use_patch: bool = False) -> list:
         """
         calculate accuracy
+
+        :param is_use_patch: use special patch method to remove 'stop word', '\n', etc.
         :return: accuracy array.
             0 : diff
             1 : same
@@ -52,12 +54,27 @@ class AbstractApiTester:
         # clone an empty array
         infer_array = np.empty(self._test_data.shape, dtype=self._test_data.dtype)
 
-        # expect value
-        infer_array[0] = self._test_data[1]
-        # infer result
-        infer_array[1] = self._api_response_list
+        if is_use_patch:
 
-        if self._log_level == 3:
+            patch_expect = []
+            for _w in self._test_data[1]:
+                patch_expect.append(_w.replace('\n', ''))
+            # expect value
+            infer_array[0] = patch_expect
+
+            patch_infer_result = []
+            for _w in self._api_response_list:
+                patch_infer_result.append(_w.replace('\n', ''))
+            # infer result
+            infer_array[1] = patch_infer_result
+
+        else:
+            # expect value
+            infer_array[0] = self._test_data[1]
+            # infer result
+            infer_array[1] = self._api_response_list
+
+        if self._log_level >= 2:
             self._logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
                 debug_me=f'\n'
                          f'🟨 [Confirm 0002]: infer_array[0][0] =\n🔸🔸🔸{infer_array[0][0]}'

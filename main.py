@@ -1,11 +1,13 @@
 # coding=utf-8
 # author xin.he
+import copy
 import logging
 import mpi4py.MPI as MPI
 
 import llm_stethoscope.shares as shares
 from llm_stethoscope.ls_config import load_config, args
 from llm_stethoscope import static_info, MPIFileHandler
+from llm_stethoscope.shares.message_code import StandardMessageCode
 
 # ============================================================
 # declare parameter
@@ -40,7 +42,6 @@ if comm_rank == 0:
 
     # verify world size
     if 1 == comm_size:
-        from llm_stethoscope.shares.message_code import StandardMessageCode
         logger.warning(StandardMessageCode.W_100_9000_100001.get_msg())
 
 
@@ -50,7 +51,13 @@ if comm_rank == 0:
 # ============================================================
 import time
 
-from llm_stethoscope import load_data, share_with_all_process, overwrite_ground_truth
+from llm_stethoscope import (
+    load_data,
+    share_with_all_process,
+    overwrite_ground_truth,
+    api_tester_factory,
+    AbstractApiTester,
+)
 
 
 def init_env():
@@ -75,7 +82,8 @@ def init_env():
 
         if not config_info_entity.test_common_is_use_annotated_data_as_gt:
             # ignore annotated data, overwrite "ground truth" via special test group
-            wrk_new_data = overwrite_ground_truth(config_info_entity.test_group_dict['0'],
+            wrk_new_data = overwrite_ground_truth(config_info_entity.test_group_dict[
+                                                      config_info_entity.test_common_groups[0]],
                                                   all_test_data_as_numpy_array,
                                                   config_info_entity.log_level,
                                                   logger)
@@ -112,4 +120,69 @@ if __name__ == '__main__':
     # - TODO start remote probe
     recv_data = init_env()
 
-    
+    test_grp_array = list(copy.deepcopy(config_info_entity.test_common_groups))
+    if not config_info_entity.test_common_is_use_annotated_data_as_gt:
+        # remove the first group info
+        test_grp_array.pop(0)
+
+    # post request
+    process_infer_result = []
+
+    for grp_name in test_grp_array:
+
+        if comm_rank > 0:
+            from llm_stethoscope.ls_config import ApiServerConfigInfo
+            # fetch tester config
+            _tester_info = config_info_entity.test_group_dict.get(grp_name)
+
+            assert isinstance(_tester_info, ApiServerConfigInfo)
+
+            # generate api tester
+            grp_tester: AbstractApiTester = api_tester_factory(_tester_info.llm_server_type,
+                                                               recv_data,
+                                                               _tester_info.model_name,
+                                                               _tester_info.url,
+                                                               config_info_entity.log_level,
+                                                               logger)
+            # post then get original infer result
+            _ = grp_tester.post_req()
+            process_infer_result = grp_tester.calculate_accuracy(is_use_patch=True)
+
+        # 'gather' function will return a 2D array, that each process will return a single array,
+        # 'all_result' just tie them all
+        all_result = comm.gather(process_infer_result, root=0)
+
+        # GC
+        process_infer_result.clear()
+
+        if comm_rank == 0:
+            flatten_array = []
+            for _wrk_array in all_result:
+                flatten_array.extend(_wrk_array)
+
+            # GC
+            del all_result
+
+            # debug
+            if 3 == config_info_entity.log_level:
+                for _debug in flatten_array[0:3]:
+                    logger.info(StandardMessageCode.I_100_9000_200004.get_formatted_msg(
+                        debug_me=f'flatten_array[0:3] = {_debug}'
+                    ))
+
+            # accuracy
+            accu = sum(flatten_array) / len(flatten_array)
+
+            max_row_width = 120
+
+            logger.info((f'=== Report [{grp_name}] ' + '=' * max_row_width)[:max_row_width])
+            logger.info(f'🎯 Accuracy : {accu}')
+            # logger.info(f'Total process time: {end_ts - start_ts} s')
+            # logger.info(f'Average infer speed(sentence): { len(flatten_array) / (end_ts - start_ts) }')
+            # logger.info(f'Average Response Time(ART): { (end_ts - start_ts) / len(flatten_array) }')
+            # logger.info('-' * 120)
+            # # logger.info(probe_result)
+            # logger.info(f'GPU utilization: Max - {probe_result.get("gpu_utilization").get("max")}, '
+            #             f'Min - {probe_result.get("gpu_utilization").get("min")}, '
+            #             f'Avg - {probe_result.get("gpu_utilization").get("avg")}')
+            logger.info('=' * max_row_width)
